@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Wager — Outguess the Machine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f2ecdd;--paper-shade:#e9e1cd;--ink:#1c1813;--ink-soft:#4a4237;
+    --ink-faint:#7a7161;--rule:#c3b598;--rule-strong:#8f8368;--red:#9a2b1c;
+    --green:#3f6b3a;--measure:600px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:"Newsreader",Georgia,serif;font-optical-sizing:auto;
+    font-feature-settings:"onum" 1,"liga" 1;line-height:1.5;
+    display:flex;flex-direction:column;align-items:center;padding:0 1rem 4rem;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(0,0,0,0.015), transparent 60%),
+      radial-gradient(circle at 85% 80%, rgba(0,0,0,0.02), transparent 55%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+  .sheet{width:100%;max-width:var(--measure)}
+  .masthead{text-align:center;padding:1.6rem 0 0.4rem}
+  .masthead .kicker{font-size:0.66rem;letter-spacing:0.32em;text-transform:uppercase;color:var(--ink-soft);font-weight:500}
+  .nameplate{font-family:"UnifrakturCook",serif;font-weight:700;font-size:clamp(2.9rem,13vw,4.6rem);line-height:0.95;margin:0.2rem 0 0.1rem}
+  .masthead .strap{font-family:"Playfair Display",serif;font-style:italic;font-size:1rem;color:var(--ink-soft)}
+  .rule-heavy{border:0;border-top:3px double var(--rule-strong);margin:0.7rem 0 0.25rem}
+  .rule-thin{border:0;border-top:1px solid var(--rule);margin:0.25rem 0}
+  .furniture{display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.3rem;font-size:0.64rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-faint);padding:0.3rem 0.1rem 0}
+
+  .lead{padding:1.3rem 0 0.4rem}
+  .headline{font-family:"Playfair Display",serif;font-weight:900;font-size:clamp(1.6rem,6vw,2.3rem);line-height:1.08;text-align:center;margin-bottom:0.5rem}
+  .deck{font-style:italic;color:var(--ink-soft);text-align:center;font-size:1.02rem;max-width:34em;margin:0 auto 0.8rem}
+  .rules{font-size:0.9rem;color:var(--ink-soft);text-align:center;max-width:36em;margin:0 auto}
+  .rules b{color:var(--ink)}
+  .smallcaps{font-variant:small-caps;letter-spacing:0.03em}
+
+  .engine{border:1.5px solid var(--ink);background:linear-gradient(var(--paper-shade),var(--paper));padding:1.1rem 1.1rem 1.3rem;margin:1.3rem 0;box-shadow:2px 3px 0 rgba(28,24,19,0.08)}
+  .scoreline{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--rule);padding-bottom:0.5rem;margin-bottom:0.9rem;font-size:0.7rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-soft)}
+  .scoreline .total{font-family:"Playfair Display",serif;font-weight:700;font-size:1.1rem;letter-spacing:0;color:var(--ink);text-transform:none}
+
+  .stem-label{font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:0.3rem}
+  .stem{font-size:1.24rem;line-height:1.6;border-left:2px solid var(--rule-strong);padding:0.2rem 0 0.2rem 0.8rem;margin-bottom:0.9rem}
+  .stem .blank{color:var(--red);font-weight:600;border-bottom:2px solid var(--red);padding:0 0.5rem}
+
+  .answer-row{display:flex;gap:0.5rem;align-items:stretch;flex-wrap:wrap}
+  .answer-input{flex:1;min-width:11rem;background:rgba(255,255,255,0.4);border:1px solid var(--rule);font-family:inherit;font-size:1.1rem;color:var(--ink);padding:0.5rem 0.7rem}
+  .answer-input:focus{outline:none;border-color:var(--ink-soft)}
+  button.press{font-family:"Newsreader",serif;font-weight:500;font-size:0.82rem;letter-spacing:0.14em;text-transform:uppercase;padding:0.55rem 1rem;background:var(--ink);color:var(--paper);border:1.5px solid var(--ink);cursor:pointer;transition:background 0.15s,color 0.15s}
+  button.press:hover:not(:disabled){background:var(--red);border-color:var(--red)}
+  button.press.ghost{background:transparent;color:var(--ink)}
+  button.press.ghost:hover:not(:disabled){background:var(--ink);color:var(--paper)}
+  button.press:disabled{opacity:0.35;cursor:not-allowed}
+  button.press.wide{width:100%;margin-top:0.9rem}
+
+  /* reveal */
+  .reveal{margin-top:0.4rem;display:none}
+  .reveal.show{display:block}
+  .completed{font-size:1.18rem;line-height:1.6;margin:0.2rem 0 1rem;border-left:2px solid var(--rule-strong);padding:0.2rem 0 0.2rem 0.8rem}
+  .completed .fixed{color:var(--ink)}
+  .completed .pick{color:var(--red);font-weight:600}
+  .round-score{display:flex;align-items:baseline;gap:0.6rem;justify-content:center;margin-bottom:0.1rem}
+  .round-score .n{font-family:"Playfair Display",serif;font-weight:900;font-size:2.9rem;line-height:1;color:var(--ink)}
+  .round-score .of{font-size:0.9rem;color:var(--ink-faint)}
+  .round-verdict{text-align:center;font-family:"Playfair Display",serif;font-style:italic;font-weight:700;font-size:1.15rem;margin-bottom:0.9rem}
+  .round-verdict.good{color:var(--green)}
+  .round-verdict.mid{color:var(--ink-soft)}
+  .round-verdict.low{color:var(--ink-faint)}
+  .round-verdict.wild{color:var(--red)}
+  .expected{text-align:center;margin-bottom:0.5rem}
+  .expected .lab{font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:0.4rem}
+  .chip{display:inline-block;font-size:1rem;padding:0.12rem 0.55rem;margin:0.15rem;border:1px solid var(--rule);background:rgba(255,255,255,0.35);border-radius:2px;white-space:pre}
+  .yourword{text-align:center;font-size:0.9rem;color:var(--ink-soft);margin-top:0.5rem}
+  .yourword b{color:var(--ink)}
+
+  /* results */
+  .results{text-align:center;display:none}
+  .results.show{display:block}
+  .results .big{font-family:"Playfair Display",serif;font-weight:900;font-size:4rem;line-height:1;color:var(--ink)}
+  .results .of{font-size:1rem;color:var(--ink-faint);margin-bottom:0.3rem}
+  .results .rgrade{font-family:"Playfair Display",serif;font-style:italic;font-weight:700;font-size:1.3rem;color:var(--red);margin:0.5rem 0 0.4rem}
+  .results .rnote{font-size:0.95rem;color:var(--ink-soft);max-width:32em;margin:0 auto 1rem}
+  .results .breakdown{list-style:none;font-size:0.92rem;color:var(--ink-soft);max-width:34em;margin:0 auto 1rem;text-align:left}
+  .results .breakdown li{display:flex;justify-content:space-between;border-bottom:1px dotted var(--rule);padding:0.3rem 0;gap:1rem}
+  .results .breakdown li .w{color:var(--red);font-weight:600}
+  .results .breakdown li .s{font-variant-numeric:tabular-nums;color:var(--ink)}
+
+  .press-status{display:flex;align-items:center;gap:0.5rem;justify-content:center;font-size:0.66rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-faint);padding:0.8rem 0 0.2rem}
+  .press-status .dot{width:7px;height:7px;border-radius:50%;background:var(--ink-faint)}
+  .dot.loading{background:var(--red);animation:pulse 1s infinite}
+  .dot.ready{background:var(--green)}
+  .dot.error{background:var(--red)}
+  .dot.thinking{background:var(--red);animation:pulse 0.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}
+  .press-bar{height:2px;background:var(--rule);overflow:hidden;margin:0.2rem 0}
+  .press-bar>span{display:block;height:100%;width:0;background:var(--red);transition:width 0.3s}
+  .press-note{text-align:center;font-size:0.68rem;color:var(--ink-faint);font-style:italic}
+
+  .gloss{margin-top:1.6rem;column-gap:1.6rem}
+  .gloss h3{font-family:"Playfair Display",serif;font-weight:700;font-size:1.05rem;border-bottom:1px solid var(--rule);padding-bottom:0.2rem;margin-bottom:0.4rem}
+  .gloss p{font-size:0.9rem;color:var(--ink-soft);margin-bottom:0.7rem;text-align:justify;hyphens:auto}
+  .colophon{margin-top:1.8rem;border-top:3px double var(--rule-strong);padding-top:0.7rem;font-size:0.68rem;color:var(--ink-faint);text-align:center;line-height:1.7}
+  .colophon a{color:var(--ink-faint)}
+  @media(min-width:560px){ .gloss{column-count:2} }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="masthead">
+    <div class="kicker">A Companion to The AI Interviews · Illustrated Enquiry</div>
+    <h1 class="nameplate">The Wager</h1>
+    <div class="strap">Outguess the machine &mdash; find the sensible word it never saw coming</div>
+  </div>
+  <hr class="rule-heavy">
+  <div class="furniture">
+    <span>Vol. I · No. 3</span>
+    <span id="edition-date">Late Edition</span>
+    <span>Stake: Five Rounds</span>
+  </div>
+  <hr class="rule-thin">
+
+  <div class="lead">
+    <h2 class="headline">Beat It At Its Own Guess</h2>
+    <p class="deck">The machine will hand you an unfinished line and privately bet on the next word. Supply a word it did not expect &mdash; but a word that still <em>fits</em>.</p>
+    <p class="rules">Points reward the <b>sweet spot</b>: a sensible word the machine ranked low. The obvious word scores nothing &mdash; that is its own cliché. Pure nonsense scores nothing either &mdash; the machine cannot tell genius from gibberish, so it will not pay you for it. The game is winnable only by being <b>unexpected and coherent at once</b>.</p>
+  </div>
+
+  <div class="engine">
+    <div class="scoreline">
+      <span id="round-label">Round — of 5</span>
+      <span class="total" id="total">0 pts</span>
+    </div>
+
+    <!-- PLAY -->
+    <div id="play">
+      <div class="stem-label">Finish the line</div>
+      <div class="stem" id="stem">…</div>
+      <div class="answer-row">
+        <input class="answer-input" id="answer" type="text" placeholder="one word…" autocomplete="off" spellcheck="false" disabled>
+        <button class="press" id="play-btn" disabled>Wager it</button>
+      </div>
+    </div>
+
+    <!-- REVEAL -->
+    <div class="reveal" id="reveal">
+      <div class="completed" id="completed"></div>
+      <div class="round-score"><span class="n" id="round-n">0</span><span class="of">/ 100</span></div>
+      <div class="round-verdict" id="round-verdict"></div>
+      <div class="expected">
+        <span class="lab">The machine was betting on</span>
+        <div id="chips"></div>
+      </div>
+      <div class="yourword" id="yourword"></div>
+      <button class="press wide" id="next-btn">Next round</button>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results" id="results">
+      <div class="big" id="final-n">0</div>
+      <div class="of">out of 500</div>
+      <div class="rgrade" id="final-grade"></div>
+      <div class="rnote" id="final-note"></div>
+      <ul class="breakdown" id="breakdown"></ul>
+      <button class="press wide" id="again-btn">Play again</button>
+    </div>
+
+    <div class="press-status">
+      <span class="dot loading" id="dot"></span>
+      <span id="status-text">warming the presses</span>
+    </div>
+    <div class="press-bar"><span id="press-bar-fill"></span></div>
+    <div class="press-note" id="press-note">a small on-device press · weights load once, then cache</div>
+  </div>
+
+  <div class="gloss">
+    <div>
+      <h3>How a wager is scored</h3>
+      <p>Your word is read as a probability: how likely the machine thought it was, given the line so far. That probability is turned into "surprise." Too little surprise means you picked the obvious word. Too much means the machine found your word barely possible at all &mdash; the mark of nonsense. Points peak between the two, where a word is unexpected yet still probable enough to be sensible.</p>
+    </div>
+    <div>
+      <h3>Why nonsense cannot win</h3>
+      <p>This is the honest heart of the game. A meter that simply rewarded surprise would crown gibberish champion, because to a small machine a nonsense word and a brilliant one are equally startling. By paying only in the middle band, the scoring itself refuses the trick &mdash; no disclaimer required. A truly wild guess is named "wild," not "genius."</p>
+    </div>
+    <div>
+      <h3>What "sensible" really means here</h3>
+      <p>The machine does not judge sense; it judges probability, which is only a proxy for sense. A moderately probable word is <em>usually</em> coherent, not always. Treat a high score as "the machine found this a plausible surprise," not as proof the word was good. That final judgement stays with the player.</p>
+    </div>
+    <div>
+      <h3>The honest caveat</h3>
+      <p>A 360-million-parameter model, tuned to sound like an assistant, sets these odds &mdash; so its notion of the "expected" word is rough and a little assistant-flavoured. The great models would bet differently. Read the game as a mirror for your own reflexes, not a ruling. Nothing typed here leaves the browser.</p>
+    </div>
+  </div>
+
+  <div class="colophon">
+    Odds set on-device by <span class="smallcaps">SmolLM2-360M-Instruct</span> via
+    <a href="https://huggingface.co/docs/transformers.js" target="_blank" rel="noopener">Transformers.js</a>.
+    No text leaves this browser · no API is called.<br>
+    A companion sheet to <em>The AI Interviews</em>.
+  </div>
+
+</div>
+
+<!-- ══ THE PRESS-ROOM WORKER ══
+     Inference runs off the main thread. iOS (all browsers are WebKit) kills tabs
+     whose main thread stalls; a worker removes that trigger. Only a tiny result
+     object crosses back — the seq×49152 logit tensor never leaves the worker. -->
+<script id="press-worker" type="text/js-worker">
+import { AutoModelForCausalLM, AutoTokenizer } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.0/dist/transformers.min.js';
+
+const MODEL_ID = 'HuggingFaceTB/SmolLM2-360M-Instruct';
+const TOP_K = 3;
+let tokenizer = null, model = null;
+
+function onProgress(p){
+  if(p.status==='downloading'||p.status==='loading'||p.status==='progress'){
+    postMessage({type:'progress', progress:p.progress||0, file:p.file||'', loaded:p.loaded||0, total:p.total||0});
+  }
+}
+async function hasFp16(){
+  try{ if(!navigator.gpu) return false;
+    const a = await navigator.gpu.requestAdapter();
+    return !!a && a.features.has('shader-f16');
+  }catch(e){ return false; }
+}
+async function tryLoad(opts){
+  tokenizer = tokenizer || await AutoTokenizer.from_pretrained(MODEL_ID, {progress_callback:onProgress});
+  model = await AutoModelForCausalLM.from_pretrained(MODEL_ID, {...opts, progress_callback:onProgress});
+}
+async function load(){
+  try{
+    if(navigator.gpu){
+      try{ await tryLoad({ dtype:(await hasFp16())?'q4f16':'q4', device:'webgpu' }); }
+      catch(e1){
+        // dispose the partial model before switching backends
+        postMessage({type:'note', text:'no fast press found — falling back to a slower one'});
+        try{ if(model && model.dispose) await model.dispose(); }catch(e){}
+        model = null;
+        await tryLoad({ dtype:'q4' });   // q4, not q8: ~230 MB instead of ~380 MB on the no-GPU path
+      }
+    } else {
+      await tryLoad({ dtype:'q4' });
+    }
+    postMessage({type:'ready'});
+  }catch(err){
+    postMessage({type:'fatal', message:String(err && err.message || err)});
+  }
+}
+
+// one row of logits → top-K expected + the player's word rank/prob/bits
+function readRow(data, base, vocab, playerTok){
+  let max = -Infinity;
+  for(let j=0;j<vocab;j++){ const v=data[base+j]; if(v>max) max=v; }
+  const topIdx = new Array(TOP_K).fill(-1), topVal = new Array(TOP_K).fill(-Infinity);
+  const tLogit = data[base+playerTok];
+  let sum=0, greater=0;
+  for(let j=0;j<vocab;j++){
+    const v = data[base+j];
+    sum += Math.exp(v-max);
+    if(v>tLogit) greater++;
+    if(v>topVal[TOP_K-1]){
+      let k=TOP_K-1;
+      while(k>0 && v>topVal[k-1]){ topVal[k]=topVal[k-1]; topIdx[k]=topIdx[k-1]; k--; }
+      topVal[k]=v; topIdx[k]=j;
+    }
+  }
+  const logZ = max + Math.log(sum);
+  const p = Math.exp(tLogit - logZ);
+  const bits = -Math.log2(Math.max(p, 1e-12));
+  const top = topIdx.map((id,k)=>({ id, p: Math.exp(topVal[k]-logZ) }));
+  return { top, rank: greater+1, p, bits };
+}
+function safeDecode(id){
+  try{ return tokenizer.decode([id], {skip_special_tokens:false}); }catch(e){ return ''; }
+}
+
+async function wager(stem, word){
+  let out=null, inputs=null;
+  try{
+    const idsStem = Array.from((await tokenizer(stem)).input_ids.data, Number);
+    const full = stem + (stem.endsWith(' ')?'':' ') + word;
+    inputs = await tokenizer(full);
+    const idsFull = Array.from(inputs.input_ids.data, Number);
+    // boundary = first index where the player's continuation begins
+    let b=0; while(b<idsStem.length && b<idsFull.length && idsStem[b]===idsFull[b]) b++;
+    const playerTok = idsFull[b];
+    if(playerTok===undefined) throw new Error('empty continuation');
+
+    out = await model(inputs);
+    const logits = out.logits, vocab = logits.dims[2];
+    const row = readRow(logits.data, (b-1)*vocab, vocab, playerTok);
+    // decode here so only strings + numbers cross the boundary (~200 bytes, not ~30 MB)
+    const top = row.top.filter(c=>c.id>=0).map(c=>({ text:safeDecode(c.id), p:c.p }));
+    postMessage({type:'result', top, rank:row.rank, p:row.p, bits:row.bits});
+  }catch(err){
+    postMessage({type:'result-error', message:String(err && err.message || err)});
+  }finally{
+    // tensors stay in the worker and die here
+    try{ for(const t of Object.values(out ?? {})) t?.dispose?.(); }catch(e){}
+    try{ for(const t of Object.values(inputs ?? {})) t?.dispose?.(); }catch(e){}
+  }
+}
+
+onmessage = (e)=>{
+  const m = e.data;
+  if(m.type==='load') load();
+  else if(m.type==='wager') wager(m.stem, m.word);
+};
+</script>
+
+<script type="module">
+const ROUNDS = 5;
+
+const STEMS = [
+  'The lighthouse keeper lit the lamp and watched the',
+  'She opened the letter and immediately began to',
+  'In the end, the only thing that truly matters is a',
+  'He tasted the soup, frowned, and reached for the',
+  'The city at midnight smelled of rain and',
+  'Nobody had warned her that the forest was full of',
+  "The old man's advice was simple: never trust a",
+  'After the fire, the town rebuilt everything except the',
+  'The child pointed at the sky and asked why the',
+  'My grandmother kept her fiercest secrets inside a',
+  'The last thing anyone expected to find in the attic was a',
+  'When the music finally stopped, the whole room began to',
+  'The detective knew the culprit the moment she noticed the',
+  'They say the mountain is haunted by the ghost of a',
+  'He signed the contract, then very quietly pocketed the',
+  'The recipe called for flour, sugar, and a generous pinch of',
+];
+
+const $ = id => document.getElementById(id);
+const dot=$('dot'), statusText=$('status-text'), barFill=$('press-bar-fill'), pressNote=$('press-note');
+const stemEl=$('stem'), answerEl=$('answer'), playBtn=$('play-btn');
+const playPane=$('play'), revealPane=$('reveal'), resultsPane=$('results');
+const roundLabel=$('round-label'), totalEl=$('total');
+const completedEl=$('completed'), roundN=$('round-n'), roundVerdict=$('round-verdict');
+const chipsEl=$('chips'), yourwordEl=$('yourword'), nextBtn=$('next-btn'), againBtn=$('again-btn');
+const finalN=$('final-n'), finalGrade=$('final-grade'), finalNote=$('final-note'), breakdownEl=$('breakdown');
+
+let deck=[], idx=0, total=0, log=[];
+let pending=null;   // {stem, word} awaiting a worker result
+let ready=false;
+
+try{ $('edition-date').textContent = new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); }catch(e){}
+function setStatus(s,t){ dot.className='dot '+s; statusText.textContent=t; }
+
+// ── goldilocks scoring: peak points for a coherent-but-unexpected word ──
+// bits = -log2(P(your word)). Low bits = obvious. High bits = nonsense. Middle = the prize.
+function scoreBits(bits){
+  const peak=8;
+  let s;
+  if(bits<=peak) s = 100*Math.pow(Math.max(bits,0)/peak, 1.3);   // ramp up to the sweet spot
+  else           s = 100*Math.exp(-Math.pow((bits-peak)/6, 2));  // taper toward "nonsense"
+  return Math.max(0, Math.round(s));
+}
+function verdictFor(bits, rank){
+  if(rank===1)   return ['low','Its own word — the exact bet it made.'];
+  if(bits<2.5)   return ['low','Autopilot — the word it was reaching for too.'];
+  if(bits<5)     return ['mid','Expected. Sensible, but it saw you coming.'];
+  if(bits<9)     return ['good','A fresh, fair choice — it did not see that.'];
+  if(bits<13)    return ['good','Sharp. Unexpected and it still holds together.'];
+  if(bits<16)    return ['wild','Bold — right at the edge of what it can parse.'];
+  return ['wild','Wild — too far out for the machine to judge. It cannot tell inspired from nonsense here, so it will not pay you for it.'];
+}
+
+// ── the worker (inlined so the whole tool stays one file) ──
+const workerSrc = document.getElementById('press-worker').textContent;
+const worker = new Worker(
+  URL.createObjectURL(new Blob([workerSrc], {type:'text/javascript'})),
+  {type:'module'}
+);
+
+worker.onmessage = (e)=>{
+  const m = e.data;
+  if(m.type==='progress'){
+    barFill.style.width = Math.round(m.progress||0)+'%';
+    if(m.file) pressNote.textContent = 'setting '+m.file.split('/').pop()+
+      (m.total?` — ${(m.loaded/1e6).toFixed(0)} of ${(m.total/1e6).toFixed(0)} MB`:'');
+  }
+  else if(m.type==='note'){ pressNote.textContent = m.text; }
+  else if(m.type==='ready'){
+    ready=true;
+    barFill.style.width='100%';
+    pressNote.textContent='press ready · weights cached · nothing leaves this browser';
+    setStatus('ready','ready');
+    newGame();
+  }
+  else if(m.type==='fatal'){
+    console.error(m.message);
+    setStatus('error','the wire is down');
+    pressNote.textContent='';
+    stemEl.textContent='The wire is down — this browser cannot run the on-device press. Try Chrome or Edge on desktop.';
+  }
+  else if(m.type==='result'){
+    if(!pending) return;
+    const {stem, word} = pending; pending=null;
+    const pts = scoreBits(m.bits);
+    const [cls, text] = verdictFor(m.bits, m.rank);
+    total += pts;
+    log.push({ stem, word, pts });
+    showReveal(stem, word, pts, cls, text, m);
+    setStatus('ready','ready');
+  }
+  else if(m.type==='result-error'){
+    console.error(m.message);
+    if(!pending) return;
+    const {stem, word} = pending; pending=null;
+    setStatus('error','the type is jammed');
+    showReveal(stem, word, 0, 'wild', 'The type jammed on that one — no wager recorded.', {top:[],rank:'—',p:0,bits:0});
+  }
+};
+worker.onerror = (e)=>{
+  console.error(e);
+  setStatus('error','the wire is down');
+  pressNote.textContent='';
+  stemEl.textContent='The wire is down — this browser cannot run the on-device press. Try Chrome or Edge on desktop.';
+};
+
+function wager(){
+  if(pending || !ready) return;
+  const raw = answerEl.value.trim();
+  if(!raw){ answerEl.focus(); return; }
+  const word = raw.split(/\s+/)[0];             // score the first word of the guess
+  playBtn.disabled=true; answerEl.disabled=true;
+  setStatus('thinking','the machine is betting');
+  pending = { stem: deck[idx], word };
+  worker.postMessage({type:'wager', stem: deck[idx], word});
+}
+
+function showReveal(stem, word, pts, cls, text, row){
+  playPane.style.display='none';
+  totalEl.textContent = total+' pts';
+  const f=document.createElement('span'); f.className='fixed'; f.textContent=stem+' ';
+  const p=document.createElement('span'); p.className='pick'; p.textContent=word;
+  completedEl.replaceChildren(f,p);
+  roundN.textContent = pts;
+  roundVerdict.className = 'round-verdict '+cls;
+  roundVerdict.textContent = text;
+  chipsEl.replaceChildren();
+  row.top.forEach(c=>{
+    const chip=document.createElement('span'); chip.className='chip';
+    chip.textContent = c.text.replace(/\n/g,'⏎') + '  ' + (c.p*100).toFixed(0)+'%';
+    chipsEl.appendChild(chip);
+  });
+  yourwordEl.innerHTML = (typeof row.rank==='number')
+    ? `Your word <b>${word}</b> ranked #${row.rank} in its book, at ${(row.p*100).toFixed(row.p<0.01?3:1)}%.`
+    : '';
+  nextBtn.textContent = (idx>=ROUNDS-1) ? 'See the tally' : 'Next round';
+  revealPane.classList.add('show');
+}
+
+function nextRound(){
+  revealPane.classList.remove('show');
+  idx++;
+  if(idx>=ROUNDS){ showResults(); return; }
+  presentStem();
+}
+function presentStem(){
+  roundLabel.textContent = `Round ${idx+1} of ${ROUNDS}`;
+  totalEl.textContent = total+' pts';
+  stemEl.innerHTML = deck[idx] + ' <span class="blank">?</span>';
+  answerEl.value=''; answerEl.disabled=false; playBtn.disabled=false;
+  playPane.style.display='block';
+  answerEl.focus();
+}
+
+function showResults(){
+  playPane.style.display='none';
+  finalN.textContent = total;
+  const pct = total/(ROUNDS*100);
+  let g,note;
+  if(pct>=0.7){ g='A sharp eye for the fresh word.'; note='Round after round the choices were unexpected yet coherent — the hardest band to hit. This is the reflex the game is really testing.'; }
+  else if(pct>=0.45){ g='A good ear, with a few reflexes.'; note='A solid share of surprising-but-sensible words, softened by a handful of obvious ones. The obvious ones are worth noticing — those are where writing tends to run on autopilot.'; }
+  else if(pct>=0.2){ g='Mostly the expected turns.'; note='Many wagers landed close to the word the machine itself would have written. That is not failure — it is a map of where the ready-made phrase came first to hand.'; }
+  else { g='Either very safe, or very wild.'; note='Low scores come from two opposite places: the obvious word, and the word so strange the machine could not parse it. Worth knowing which of the two was in play — the game rewards only the narrow path between them.'; }
+  finalGrade.textContent = g;
+  finalNote.textContent = note;
+  breakdownEl.replaceChildren();
+  log.forEach((r,i)=>{
+    const li=document.createElement('li');
+    const l=document.createElement('span'); l.innerHTML = `${i+1}. …${r.stem.split(' ').slice(-3).join(' ')} <span class="w">${r.word}</span>`;
+    const s=document.createElement('span'); s.className='s'; s.textContent = r.pts+' pts';
+    li.appendChild(l); li.appendChild(s); breakdownEl.appendChild(li);
+  });
+  resultsPane.classList.add('show');
+}
+
+function newGame(){
+  deck = [...STEMS].sort(()=>Math.random()-0.5).slice(0, ROUNDS);
+  idx=0; total=0; log=[];
+  resultsPane.classList.remove('show');
+  revealPane.classList.remove('show');
+  presentStem();
+}
+
+playBtn.addEventListener('click', wager);
+answerEl.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); wager(); } });
+nextBtn.addEventListener('click', nextRound);
+againBtn.addEventListener('click', newGame);
+
+setStatus('loading','warming the presses');
+worker.postMessage({type:'load'});
+</script>
+</body>
+</html>
